@@ -3,6 +3,10 @@ const bcrypt = require("bcrypt");
 const { initializeDatabase, queryDB } = require("./database");
 const jwt = require("jsonwebtoken");
 const AesEncryption = require('aes-encryption')
+const logger = require('./.rotate.js'); 
+
+logger.info('Dies ist eine Log-Nachricht.');
+
 
 const aes = new AesEncryption()
 aes.setSecretKey(AES_SECRET)
@@ -56,6 +60,13 @@ const initializeAPI = async (app) => {
 
 const login = async (req, res) => {
   // Validate request
+  req.log.info(`Benutzer ${username} hat sich eingeloggt`);
+  res.send(token);
+
+  // Bei einem Fehler während des Logins
+  if (!result) {
+    req.log.error(`Fehler beim Einloggen des Benutzers ${username}`);
+  }
   const result = validationResult(req);
   if (!result.isEmpty()) {
     const formattedErrors = [];
